@@ -1,0 +1,42 @@
+version: '3.6'
+services:
+  mongodb:
+    image: mongo:3.6.3
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/data/db
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+  customer-service:
+    image: edrb/customer-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SERVICES_ORDERS_BASEURL: http://order-service:8081/order-service/v1/orders
+      SPRING_REDIS_HOST: redis
+    depends_on:
+      - rabbitmq
+      - mongodb
+      - redis
+  order-service:
+    image: edrb/order-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_REDIS_HOST: redis
+    depends_on:
+      - rabbitmq
+      - mongodb
+      - redis

@@ -1,0 +1,22 @@
+spring:
+  data:
+    mongodb:
+      database: "customerServiceDB"
+  rabbitmq:
+      host: ${RABBITMQ_HOST:localhost}
+  cache:
+    type: redis
+    redis:
+      cache-null-values: false
+      key-prefix: CST_
+
+server:
+  servlet:
+    context-path: /customer-service/v1
+
+services:
+  orders:
+    baseURL: http://localhost:8081/order-service/v1/orders
+    queueName: ordersDeletions
+    queryParam:
+      customerId: customerId
